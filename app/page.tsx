@@ -1,3 +1,5 @@
+import { DashboardContent } from '@/components/dashboard-content'
+import { DashboardClient } from '@/components/dashboard-client'
 import Link from 'next/link'
 import { ArrowUpRight, Flag, Sparkles } from 'lucide-react'
 import {
@@ -84,6 +86,7 @@ export default function DashboardPage() {
   })
 
   return (
+  <DashboardClient>
     <div className="mx-auto max-w-7xl space-y-6 p-4 md:p-6 lg:p-8">
       <PageHeader
         eyebrow={dateLong}
@@ -115,6 +118,8 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+
+      <DashboardContent />
 
       {/* Stat tiles */}
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -262,6 +267,7 @@ export default function DashboardPage() {
           </Card>
         </div>
       </div>
-    </div>
+        </div>
+  </DashboardClient>
   )
 }

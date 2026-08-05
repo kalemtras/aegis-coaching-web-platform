@@ -6,6 +6,7 @@ import { ArrowRight, Check, Waypoints } from 'lucide-react'
 import { athlete, raceMeta, todayKey, type Goal, type RaceType } from '@/lib/mock-data'
 import { project, type AthleteInput } from '@/lib/engine'
 import { PageHeader } from '@/components/kit'
+import { saveAthlete, saveGoals } from '@/lib/store'
 import { ProjectionCard } from '@/components/projection-card'
 
 function parseClock(v: string): number {
@@ -176,7 +177,27 @@ export default function OnboardingPage() {
                 {projection.weeksToRace} weeks to race · engine seeds the plan on creation
               </p>
               <button
-                onClick={() => setCreated(true)}
+                onClick={() => {
+  const newAthlete = {
+    name: f.name,
+    handle: '',
+    location: '',
+    age: Number(f.age),
+    weightKg: Number(f.weightKg),
+    vo2max: Number(f.vo2max),
+    ftp: Number(f.ftp),
+    thresholdPaceSecPerKm: parseClock(f.runPace),
+    thresholdHr: Number(f.restingHr),
+    swimCss: parseClock(f.swimCss),
+    restingHr: Number(f.restingHr),
+    maxHr: 190,
+  }
+
+  saveAthlete(newAthlete)
+  saveGoals([previewGoal])
+
+  setCreated(true)
+}}
                 className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
               >
                 {created ? <Check className="size-4" /> : <Waypoints className="size-4" />}
