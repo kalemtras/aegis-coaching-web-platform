@@ -1,7 +1,12 @@
+'use client'
+import { useEffect, useState } from 'react'
+import type { Goal } from '@/lib/mock-data'
 import Link from 'next/link'
 import { MapPin } from 'lucide-react'
-import { goals, phaseMeta, seasonBlocks, todayKey } from '@/lib/mock-data'
-import { primaryGoal, primaryProjection } from '@/lib/projection'
+import { phaseMeta, seasonBlocks, todayKey } from '@/lib/mock-data'
+import { getAthlete } from '@/lib/store'
+import { getGoals } from '@/lib/store'
+import { project } from '@/lib/engine'
 import { Card, CardHeader, PageHeader } from '@/components/kit'
 import { ProjectionCard } from '@/components/projection-card'
 
@@ -16,6 +21,33 @@ const priorityStyle: Record<string, string> = {
 }
 
 export default function GoalsPage() {
+  const [goals, setGoals] = useState<Goal[]>([])
+
+  useEffect(() => {
+    setGoals(getGoals())
+  }, [])
+
+  const activeAthlete = getAthlete()
+  const primaryGoal = goals[0]
+  const primaryProjection =
+  primaryGoal
+    ? project(
+        {
+          name: activeAthlete?.name ?? '',
+age: activeAthlete?.age ?? 0,
+weightKg: activeAthlete?.weightKg ?? 0,
+restingHr: activeAthlete?.restingHr ?? 0,
+vo2max: activeAthlete?.vo2max ?? 0,
+ftp: activeAthlete?.ftp ?? 0,
+swimCss: activeAthlete?.swimCss ?? 0,
+runThresholdPaceSecPerKm: activeAthlete?.thresholdPaceSecPerKm ?? 0,
+          raceType: primaryGoal.distance!,
+          targetTime: primaryGoal.targetTime,
+          raceDate: primaryGoal.date,
+        },
+        todayKey,
+      )
+    : null
   const sorted = [...goals].sort((a, b) => a.date.localeCompare(b.date))
 
   return (
@@ -34,13 +66,18 @@ export default function GoalsPage() {
         }
       />
 
-      <ProjectionCard goal={primaryGoal} projection={primaryProjection} />
+      {primaryGoal && primaryProjection && (
+  <ProjectionCard
+    goal={primaryGoal}
+    projection={primaryProjection}
+  />
+)}
 
       {/* season periodization */}
       <Card>
         <CardHeader
           title="Season periodization"
-          hint={`${seasonBlocks.length} blocks · builds toward ${primaryGoal.title}`}
+          hint={`${seasonBlocks.length} blocks`}
         />
         <div className="space-y-3 p-4">
           {seasonBlocks.map((b) => {

@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Activity,
   Calendar,
@@ -17,6 +17,7 @@ import {
 import { cn } from '@/lib/utils'
 import { useTheme } from '@/components/theme-provider'
 import { athlete, currentMetric } from '@/lib/mock-data'
+import { getAthlete } from '@/lib/store'
 
 const nav = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -32,6 +33,25 @@ function isActive(pathname: string, href: string) {
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
+  const [activeAthlete, setActiveAthlete] = useState(athlete)
+
+useEffect(() => {
+  const refreshAthlete = () => {
+    const stored = getAthlete()
+
+    if (stored) {
+      setActiveAthlete(stored)
+    }
+  }
+
+  refreshAthlete()
+
+  window.addEventListener('athlete-updated', refreshAthlete)
+
+  return () => {
+    window.removeEventListener('athlete-updated', refreshAthlete)
+  }
+}, [])
   const { theme, toggleTheme } = useTheme()
   const [mobileOpen, setMobileOpen] = useState(false)
 
@@ -94,10 +114,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </div>
             <div className="min-w-0 leading-tight">
               <div className="truncate text-sm font-medium text-sidebar-foreground">
-                {athlete.name}
+                {activeAthlete.name}
               </div>
               <div className="truncate font-mono text-xs text-muted-foreground">
-                CTL {Math.round(currentMetric.ctl)} · FTP {athlete.ftp}w
+                CTL {Math.round(currentMetric.ctl)} · FTP {activeAthlete.ftp}w
               </div>
             </div>
           </div>

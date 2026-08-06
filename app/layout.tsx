@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import { ThemeProvider } from '@/components/theme-provider'
 import { AppShell } from '@/components/app-shell'
 import './globals.css'
+import Script from 'next/script'
 
 const geistSans = Geist({
   subsets: ['latin'],
@@ -47,15 +48,23 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} bg-background`} suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-      </head>
-      <body className="font-sans antialiased">
-        <ThemeProvider>
-          <AppShell>{children}</AppShell>
-        </ThemeProvider>
-        {process.env.NODE_ENV === 'production' && <Analytics />}
-      </body>
-    </html>
+
+<body className="font-sans antialiased">
+
+<Script
+  id="theme-script"
+  strategy="beforeInteractive"
+  dangerouslySetInnerHTML={{ __html: themeScript }}
+/>
+
+<ThemeProvider>
+  <AppShell>{children}</AppShell>
+</ThemeProvider>
+
+{process.env.NODE_ENV === 'production' && <Analytics />}
+
+</body>
+
+</html>
   )
 }

@@ -9,6 +9,7 @@ import { PageHeader } from '@/components/kit'
 import { saveAthlete, saveGoals } from '@/lib/store'
 import { ProjectionCard } from '@/components/projection-card'
 
+
 function parseClock(v: string): number {
   const p = v.split(':').map((n) => parseInt(n, 10) || 0)
   if (p.length === 3) return p[0] * 3600 + p[1] * 60 + p[2]

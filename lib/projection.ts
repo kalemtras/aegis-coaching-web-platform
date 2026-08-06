@@ -1,8 +1,5 @@
 import {
- athlete,
- goals,
- todayKey,
- type Goal
+  athlete,
 } from './mock-data'
 
 import {
@@ -28,42 +25,20 @@ function parseTime(value:string){
 }
 
 
-/** Convert application athlete into engine format */
-function athleteInput(){
+export function createProjection(goal:any): Projection {
 
- return {
+ return projectRace(
+  {
+    ftp: athlete.ftp,
+    swimCss: athlete.swimCss,
+    runThresholdPaceSecPerKm:
+      athlete.thresholdPaceSecPerKm,
+    vo2max: athlete.vo2max
+  },
 
-  ftp: athlete.ftp,
+  goal.distance ?? 'olympic',
 
-  swimCss: athlete.swimCss,
-
-  runThresholdPaceSecPerKm:
-   athlete.thresholdPaceSecPerKm,
-
-  vo2max:
-   athlete.vo2max
-
- }
+  parseTime(goal.targetTime)
+ )
 
 }
-
-
-/** Primary A-race */
-export const primaryGoal:Goal =
- goals.find(
-  g =>
-   g.priority === 'A'
-   &&
-   g.distance
- )
- ??
- goals[0]
-
-
-
-export const primaryProjection:Projection =
- projectRace(
-  athleteInput(),
-  primaryGoal.distance ?? 'olympic',
-  parseTime(primaryGoal.targetTime)
- )

@@ -10,6 +10,10 @@ export function saveAthlete(athlete: Athlete) {
     ATHLETE_KEY,
     JSON.stringify(athlete),
   )
+
+  window.dispatchEvent(
+  new Event('athlete-updated')
+)
 }
 
 export function getAthlete(): Athlete | null {

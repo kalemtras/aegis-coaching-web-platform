@@ -1,27 +1,52 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { athlete as defaultAthlete, type Athlete } from '@/lib/mock-data'
-import { getAthlete } from '@/lib/store'
+import { getDashboard } from '@/lib/api/dashboard'
+import type { Athlete } from '@/lib/mock-data'
+import { athlete as defaultAthlete } from '@/lib/mock-data'
 
 export function DashboardClient({
   children,
 }: {
-  children: React.ReactNode
+  children: (data: {
+  athlete: Athlete
+  metrics: {
+    ctl: number
+    atl: number
+    tsb: number
+    ramp: number
+  }
+}) => React.ReactNode
 }) {
   const [athlete, setAthlete] = useState<Athlete>(defaultAthlete)
+  const [metrics, setMetrics] = useState({
+  ctl: 0,
+  atl: 0,
+  tsb: 0,
+  ramp: 0,
+})
 
   useEffect(() => {
-    const stored = getAthlete()
+    async function load() {
+      const dashboard = await getDashboard()
 
-    if (stored) {
-      setAthlete(stored)
+      setAthlete({
+        ...defaultAthlete,
+        name: dashboard.athlete.name,
+      })
+
+      setMetrics(dashboard.metrics.current)
     }
+
+    load()
   }, [])
 
   return (
-    <>
-      {children}
-    </>
-  )
+  <>
+    {children({
+      athlete,
+      metrics,
+    })}
+  </>
+)
 }
