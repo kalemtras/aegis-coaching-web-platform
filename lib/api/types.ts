@@ -30,6 +30,9 @@ export interface DashboardResponse {
   }
 
   workouts: {
-    today: unknown[]
-  }
+  today: typeof import('@/lib/mock-data').workouts
+  week: typeof import('@/lib/mock-data').workouts
+}
+weeklyLoad: typeof import('@/lib/mock-data').weeklyLoad
+
 }

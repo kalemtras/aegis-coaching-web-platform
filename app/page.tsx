@@ -1,16 +1,11 @@
 import { DashboardContent } from "@/components/dashboard-content";
 import { getDashboard } from "@/lib/api/dashboard";
 import Link from "next/link";
-import { ArrowUpRight, Flag, Sparkles } from "lucide-react";
+import { ArrowUpRight, Sparkles } from "lucide-react";
 import {
   formatDuration,
   todayKey,
-  weeklyLoad,
-  workouts,
-  workoutsForDate,
-  startOfWeek,
   today,
-  addDays,
 } from "@/lib/mock-data";
 import { Card, CardHeader, PageHeader, StatTile } from "@/components/kit";
 import { FormChart } from "@/components/charts/form-chart";
@@ -18,9 +13,9 @@ import { LoadBars } from "@/components/charts/load-bars";
 import { WorkoutCard } from "@/components/workout-card";
 import { ProjectionCard } from "@/components/projection-card";
 import { DashboardRaceCard } from "@/components/dashboard-race-card";
-import { getAthlete, getGoals } from "@/lib/store";
+import { getGoals } from "@/lib/store";
 import { createProjection } from "@/lib/projection";
-import { DashboardGreeting } from '@/components/dashboard-greeting'
+
 
 function engineAdvice(tsb: number) {
   if (tsb < -25)
@@ -52,7 +47,7 @@ function daysUntil(dateKey: string) {
 
 export default async function DashboardPage() {
   const dashboard = await getDashboard();
-  const todays = workoutsForDate(todayKey);
+  const todays = dashboard.workouts.today;
   const advice = engineAdvice(dashboard.metrics.current.tsb);
 
   
@@ -63,12 +58,7 @@ export default async function DashboardPage() {
   const primaryProjection = primaryGoal ? createProjection(primaryGoal) : null;
 
   // this week planned vs completed
-  const ws = startOfWeek(today);
-  const weStart = ws.toISOString().slice(0, 10);
-  const weEnd = addDays(ws, 6).toISOString().slice(0, 10);
-  const weekWorkouts = workouts.filter(
-    (w) => w.date >= weStart && w.date <= weEnd && w.sport !== "rest",
-  );
+  const weekWorkouts = dashboard.workouts.week;
   const plannedTss = weekWorkouts.reduce((s, w) => s + w.plannedTss, 0);
   const doneTss = weekWorkouts.reduce((s, w) => s + (w.completed?.tss ?? 0), 0);
   const plannedMin = weekWorkouts.reduce((s, w) => s + w.plannedDurationMin, 0);
@@ -190,7 +180,7 @@ export default async function DashboardPage() {
                   hint="TSS by discipline · dashed = planned"
                 />
                 <div className="p-4">
-                  <LoadBars data={weeklyLoad} />
+                  <LoadBars data={dashboard.weeklyLoad} />
                 </div>
               </Card>
             </div>
